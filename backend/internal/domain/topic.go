@@ -10,8 +10,8 @@ import "github.com/google/uuid"
 
 type Topic struct {
 	Id       string `json:"id" gorm:"type:char(36);primaryKey"`
-	Name     string `json:"name" gorm:"uniqueIndex;not null"`
-	UserId   string `json:"userId" gorm:"type:char(36);not null"`
+	Name     string `json:"name" gorm:"type:varchar(255);uniqueIndex:idx_topic_user_name;not null"`
+	UserId   string `json:"userId" gorm:"type:char(36);uniqueIndex:idx_topic_user_name;not null"`
 	User     User   `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 	Template string `json:"template" gorm:"type:varchar(2048)"`
 }

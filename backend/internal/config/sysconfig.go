@@ -13,6 +13,12 @@ import (
 	"github.com/caarlos0/env/v11"
 )
 
+const (
+	EnvMaxSessionsPerDay = "LEXFORGE_MAX_SESSIONS_PER_DAY"
+	EnvMigrateDatabase   = "LEXFORGE_MIGRATE_DATABASE"
+	EnvDatabaseDsn       = "LEXFORGE_DATABASE_DSN"
+)
+
 type SysConfig struct {
 	// MaxSessionsPerDay is the maximum number of sessions per topic a user can have per day.
 	MaxSessionsPerDay int `env:"LEXFORGE_MAX_SESSIONS_PER_DAY" envDefault:"1"`
@@ -22,7 +28,7 @@ type SysConfig struct {
 }
 
 func LoadSystemConfig(cfg *SysConfig) error {
-	err := env.Parse(&cfg)
+	err := env.Parse(cfg)
 	if err != nil {
 		return fmt.Errorf("Failed to load environment variables: %w", err)
 	}
@@ -33,7 +39,7 @@ func (cfg *SysConfig) String() string {
 	var credentialsPattern = regexp.MustCompile(`[^:/@]+:[^@]*@`)
 
 	return fmt.Sprintf(
-		"\tMaxSessionsPerDay: %d\tMigrateDatabase: %t\tDatabaseDsn: %s",
+		"\n\tMaxSessionsPerDay: %d\n\tMigrateDatabase: %t\n\tDatabaseDsn: %s",
 		cfg.MaxSessionsPerDay,
 		cfg.MigrateDatabase,
 		credentialsPattern.ReplaceAllString(cfg.DatabaseDsn, "***:***@"))

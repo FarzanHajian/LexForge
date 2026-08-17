@@ -27,7 +27,17 @@ func (s *UserService) GetAllAsLookup() ([]domain.UserLookup, error) {
 	return s.repo.GetAllAsLookup()
 }
 
-/*
 func (s *UserService) UpdateSettings(id string, studyItemsPerSession int) (domain.User, error) {
+	user, err := s.GetById(id)
+	if err != nil {
+		return domain.User{}, err
+	}
+
+	user.StudyItemsPerSession = studyItemsPerSession
+	result, err := s.repo.Update(&user)
+	if err != nil {
+		return domain.User{}, err
+	}
+
+	return *result, nil
 }
-*/

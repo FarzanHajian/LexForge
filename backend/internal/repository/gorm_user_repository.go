@@ -46,9 +46,9 @@ func (r *GormUserRepository) GetAllAsLookup() ([]domain.UserLookup, error) {
 	return lookups, nil
 }
 
-func (r *GormUserRepository) Update(user domain.User) (domain.User, error) {
-	if err := r.db.Save(&user).Error; err != nil {
-		return domain.User{}, err
+func (r *GormUserRepository) Update(user *domain.User) (*domain.User, error) {
+	if err := r.db.Save(user).Error; err != nil {
+		return nil, err
 	}
 	return user, nil
 }

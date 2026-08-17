@@ -7,9 +7,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
+	"github.com/FarzanHajian/lexforge/backend/internal/domain"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -30,7 +32,11 @@ func setupDatabase(dsn string, migrate bool) (*gorm.DB, error) {
 	sqlDB.SetConnMaxLifetime(30 * time.Minute)
 
 	if migrate {
-		db.AutoMigrate()
+		err := db.AutoMigrate(&domain.User{}, &domain.Topic{})
+		if err != nil {
+			return nil, fmt.Errorf("Failed to migrate database: %w", err)
+		}
+		log.Println("Database migrated successfully")
 	}
 
 	return db, nil

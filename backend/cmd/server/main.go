@@ -15,11 +15,14 @@ import (
 const version = "0.1.0"
 
 func main() {
+	log.Printf("LexForge server %s started...\n", version)
+
 	cfg := config.SysConfig{}
 	err := config.LoadSystemConfig(&cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Printf("System Configuration: %s\n", cfg.String())
 
 	db, err := setupDatabase(cfg.DatabaseDsn, cfg.MigrateDatabase)
 	if err != nil {
@@ -27,6 +30,4 @@ func main() {
 	}
 	defer teardownDatabase(db)
 
-	log.Printf("lexforge server %s started...\n", version)
-	log.Printf("System Configuration: %s\n", cfg.String())
 }
