@@ -38,12 +38,8 @@ func (r *GormUserRepository) FindById(id string) (domain.User, error) {
 	return result, nil
 }
 
-func (r *GormUserRepository) GetAllAsLookup() ([]domain.UserLookup, error) {
-	var lookups []domain.UserLookup
-	if err := r.db.Model(&domain.User{}).Find(&lookups).Error; err != nil {
-		return nil, err
-	}
-	return lookups, nil
+func (r *GormUserRepository) LoadAll(buffer any, where ...any) error {
+	return r.db.Model(&domain.User{}).Find(buffer, where...).Error
 }
 
 func (r *GormUserRepository) Update(user *domain.User) (*domain.User, error) {

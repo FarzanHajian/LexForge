@@ -11,15 +11,8 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// UserRepositoryMock is a testify/mock implementation of
-// repository.UserRepository for use in unit tests.
 type UserRepositoryMock struct {
 	mock.Mock
-}
-
-func (m *UserRepositoryMock) Create(user domain.User) error {
-	args := m.Called(user)
-	return args.Error(0)
 }
 
 func (m *UserRepositoryMock) FindById(id string) (domain.User, error) {
@@ -27,7 +20,13 @@ func (m *UserRepositoryMock) FindById(id string) (domain.User, error) {
 	return args.Get(0).(domain.User), args.Error(1)
 }
 
-func (m *UserRepositoryMock) FindByExternalId(externalId string) (domain.User, error) {
-	args := m.Called(externalId)
-	return args.Get(0).(domain.User), args.Error(1)
+func (m *UserRepositoryMock) LoadAll(buffer any, where ...any) error {
+	callArgs := append([]any{buffer}, where...)
+	args := m.Called(callArgs...)
+	return args.Error(0)
+}
+
+func (m *UserRepositoryMock) Update(user *domain.User) (*domain.User, error) {
+	args := m.Called(user)
+	return args.Get(0).(*domain.User), args.Error(1)
 }

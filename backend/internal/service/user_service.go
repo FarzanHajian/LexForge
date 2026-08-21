@@ -24,7 +24,11 @@ func (s *UserService) GetById(id string) (domain.User, error) {
 }
 
 func (s *UserService) GetAllAsLookup() ([]domain.UserLookup, error) {
-	return s.repo.GetAllAsLookup()
+	var lookups []domain.UserLookup
+	if err := s.repo.LoadAll(&lookups, "Id <> ?", ""); err != nil {
+		return nil, err
+	}
+	return lookups, nil
 }
 
 func (s *UserService) UpdateSettings(id string, studyItemsPerSession int) (domain.User, error) {

@@ -6,57 +6,72 @@
 
 package service
 
-/*
 import (
+	"errors"
 	"testing"
 
 	"github.com/FarzanHajian/lexforge/backend/internal/domain"
-	"github.com/FarzanHajian/lexforge/backend/internal/repository"
+	"github.com/FarzanHajian/lexforge/backend/internal/errorhandler"
 	"github.com/FarzanHajian/lexforge/backend/internal/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
-func TestUserService_GetOrCreate_ExistingUser(t *testing.T) {
+func TestUserService_WhenUserNotFound_ReturnsNotFoundError(t *testing.T) {
 	repo := new(testutil.UserRepositoryMock)
-	existing := domain.User{Id: "u-1", Name: "Ada", ExternalId: "auth0|123", StudyItemsPerSession: 10}
-	repo.On("FindByExternalId", "auth0|123").Return(existing, nil)
-
+	repo.On("FindById", "u-1").Return(domain.User{}, errorhandler.NotFound("User not found"))
 	svc := NewUserService(repo)
-	user, err := svc.GetOrCreate("Ada", "auth0|123", 10)
 
-	assert.NoError(t, err)
-	assert.Equal(t, existing, user)
-	repo.AssertNotCalled(t, "Create", mock.Anything)
-	repo.AssertExpectations(t)
-}
-
-func TestUserService_GetOrCreate_NewUser(t *testing.T) {
-	repo := new(testutil.UserRepositoryMock)
-	repo.On("FindByExternalId", "auth0|456").Return(domain.User{}, repository.ErrNotFound)
-	repo.On("Create", mock.MatchedBy(func(u domain.User) bool {
-		return u.Name == "Grace" && u.ExternalId == "auth0|456" && u.StudyItemsPerSession == 10
-	})).Return(nil)
-
-	svc := NewUserService(repo)
-	user, err := svc.GetOrCreate("Grace", "auth0|456", 10)
-
-	assert.NoError(t, err)
-	assert.Equal(t, "Grace", user.Name)
-	assert.Equal(t, "auth0|456", user.ExternalId)
-	assert.NotEmpty(t, user.Id)
-	repo.AssertExpectations(t)
-}
-
-func TestUserService_GetById(t *testing.T) {
-	repo := new(testutil.UserRepositoryMock)
-	want := domain.User{Id: "u-1", Name: "Ada", ExternalId: "auth0|123"}
-	repo.On("FindById", "u-1").Return(want, nil)
-
-	svc := NewUserService(repo)
 	user, err := svc.GetById("u-1")
 
-	assert.NoError(t, err)
-	assert.Equal(t, want, user)
+	assert.Equal(t, domain.User{}, user)
+	var appErr errorhandler.AppError
+	assert.ErrorAs(t, err, &appErr)
+	assert.Equal(t, errorhandler.ErrorCodeNotFound, appErr.Code())
+	assert.Equal(t, "User not found", appErr.Message())
 }
-*/
+
+func TestUserService_UpdateSettings_Success(t *testing.T) {
+	repo := new(testutil.UserRepositoryMock)
+	existing := domain.User{Id: "u-1", Name: "Ada", ExternalId: "auth0|123", StudyItemsPerSession: 10}
+	repo.On("FindById", "u-1").Return(existing, nil)
+
+	updated := existing
+	updated.StudyItemsPerSession = 20
+	repo.On("Update", &updated).Return(&updated, nil)
+
+	svc := NewUserService(repo)
+	user, err := svc.UpdateSettings("u-1", 20)
+
+	assert.NoError(t, err)
+	assert.Equal(t, updated, user)
+	repo.AssertExpectations(t)
+}
+
+func TestUserService_UpdateSettings_GetByIdError(t *testing.T) {
+	repo := new(testutil.UserRepositoryMock)
+	repo.On("FindById", "missing").Return(domain.User{}, errorhandler.NotFound("User not found"))
+
+	svc := NewUserService(repo)
+	_, err := svc.UpdateSettings("missing", 20)
+
+	assert.Error(t, err)
+	repo.AssertNotCalled(t, "Update", mock.Anything)
+	repo.AssertExpectations(t)
+}
+
+func TestUserService_UpdateSettings_UpdateError(t *testing.T) {
+	repo := new(testutil.UserRepositoryMock)
+	existing := domain.User{Id: "u-1", Name: "Ada", ExternalId: "auth0|123", StudyItemsPerSession: 10}
+	repo.On("FindById", "u-1").Return(existing, nil)
+
+	updated := existing
+	updated.StudyItemsPerSession = 20
+	repo.On("Update", &updated).Return((*domain.User)(nil), errors.New("db error"))
+
+	svc := NewUserService(repo)
+	_, err := svc.UpdateSettings("u-1", 20)
+
+	assert.Error(t, err)
+	repo.AssertExpectations(t)
+}
