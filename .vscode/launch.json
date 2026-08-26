@@ -11,9 +11,12 @@
             "mode": "auto",
             "program": "${workspaceFolder}/backend/cmd/server",
             "env": {
+                "LEXFORGE_SERVER_ADDRESS": "localhost:5656",
                 "LEXFORGE_MAX_SESSIONS_PER_DAY": "1",
                 "LEXFORGE_MIGRATE_DATABASE": "false",
-                "LEXFORGE_DATABASE_DSN": "lexforge:lexforge@tcp(localhost:3306)/lexforge?charset=utf8mb4&parseTime=True&loc=Local"
+                "LEXFORGE_DATABASE_DSN": "lexforge:lexforge@tcp(localhost:3306)/lexforge?charset=utf8mb4&parseTime=True&loc=Local",
+                "AUTH0_DOMAIN": "[AUTH0 DOMAIN GOES HERE]",
+                "AUTH0_AUDIENCE": "http://localhost:5656"
             }
         }
     ]

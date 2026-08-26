@@ -9,7 +9,10 @@ package main
 import (
 	"log"
 
+	"github.com/FarzanHajian/lexforge/backend/internal/auth"
 	"github.com/FarzanHajian/lexforge/backend/internal/config"
+	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
 )
 
 const version = "0.1.0"
@@ -30,4 +33,19 @@ func main() {
 	}
 	defer teardownDatabase(db)
 
+	jwtMiddleware, err := auth.NewJWTMiddleware(cfg.OAuthAuthority, cfg.OAuthAudience)
+	if err != nil {
+		log.Fatalf("Failed to set up JWT middleware: %v", err)
+	}
+
+	e := echo.New()
+	e.Use(middleware.RequestLogger())
+	e.Use(middleware.Recover())
+
+	api := e.Group("/api", echo.WrapMiddleware(jwtMiddleware.CheckJWT))
+	registerRoutes(e, api)
+
+	if err := e.Start(cfg.ServerAddress); err != nil {
+		e.Logger.Error("failed to start server", "error", err)
+	}
 }

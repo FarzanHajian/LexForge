@@ -15,7 +15,7 @@ import (
 type User struct {
 	Id                   string `json:"id" gorm:"type:char(36);primaryKey"`
 	Name                 string `json:"name" gorm:"type:varchar(255);uniqueIndex;not null"`
-	ExternalId           string `json:"externalId" gorm:"type:char(36);uniqueIndex;not null"`
+	ExternalId           string `json:"externalId" gorm:"type:varchar(255);uniqueIndex;not null"`
 	StudyItemsPerSession int    `json:"studyItemsPerSession" gorm:"type:int;not null"`
 	CreatedAt            time.Time
 	UpdatedAt            time.Time
