@@ -8,8 +8,7 @@ package domain
 
 import (
 	"time"
-
-	"github.com/google/uuid"
+	"uuid"
 )
 
 type User struct {
@@ -23,7 +22,7 @@ type User struct {
 
 func NewUser(name, externalId string, studyItemsPerSession int) User {
 	return User{
-		Id:                   uuid.NewString(),
+		Id:                   uuid.NewV7().String(),
 		Name:                 name,
 		ExternalId:           externalId,
 		StudyItemsPerSession: studyItemsPerSession,

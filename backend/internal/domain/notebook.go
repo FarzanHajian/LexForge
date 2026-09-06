@@ -6,7 +6,7 @@
 
 package domain
 
-import "github.com/google/uuid"
+import "uuid"
 
 type Notebook struct {
 	Id       string `json:"id" gorm:"type:char(36);primaryKey"`
@@ -23,7 +23,7 @@ func NewNotebook(name, userId, template, color string) (Notebook, error) {
 	}
 
 	return Notebook{
-		Id:       uuid.NewString(),
+		Id:       uuid.NewV7().String(),
 		Name:     name,
 		UserId:   userId,
 		Template: template,
