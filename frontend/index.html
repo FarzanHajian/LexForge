@@ -1,16 +1,28 @@
+<!--
+Copyright (c) 2026, Farzan Hajian
+All rights reserved.
+
+This source code is licensed under the BSD 3-Clause license found in the
+LICENSE file in the root directory of this source tree.
+-->
+
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LexForge</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    <div id="root"></div>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Pangolin&display=swap');
+    </style>
+</head>
+
+<body class="bg-primary-50 pangolin-regular text-text">
+    <div id="root" class="space-y-2 flex flex-col h-screen"></div>
     <script type="module" src="/src/main.tsx"></script>
-  </body>
+</body>
+
 </html>

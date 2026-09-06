@@ -45,11 +45,11 @@ UserStudyItemState
 PracticeSessionItem
 ```
 
-### Topic template
+### Notebook template
 
-A topic has one template, stored directly as a raw string column on `Topic`.
+A notebook has one template, stored directly as a raw string column on `Notebook`.
 
-Do **not** introduce a separate `TopicTemplate` entity/table unless a future requirement gives templates an independent lifecycle.
+Do **not** introduce a separate `NotebookTemplate` entity/table unless a future requirement gives templates an independent lifecycle.
 
 ### GORM tags
 
@@ -69,12 +69,12 @@ Handler
 
 ### Practice sessions
 
-A user can practice a topic at most once per calendar day.
+A user can practice a notebook at most once per calendar day.
 
 Enforce this with a database constraint equivalent to:
 
 ```text
-UNIQUE(user_id, topic_id, date)
+UNIQUE(user_id, notebook_id, date)
 ```
 
 Session statuses:
@@ -202,13 +202,13 @@ Important integration cases:
 - daily-session uniqueness
 - session expiration
 - migrations
-- topic sharing
+- notebook sharing
 - learning-state persistence
 - repository queries
 
-## Topic sharing
+## Notebook sharing
 
-A user owns topics and can share them with another user in read-only mode.
+A user owns notebooks and can share them with another user in read-only mode.
 
 Initial permissions:
 
@@ -217,7 +217,7 @@ OWNER
 VIEWER
 ```
 
-A viewer can read the topic/study items but cannot modify them.
+A viewer can read the notebook/study items but cannot modify them.
 
 ## Observability
 
@@ -329,7 +329,7 @@ Invoke only skills relevant to the current task.
 12. Keep the scheduler replaceable.
 13. Do not over-engineer the initial version.
 14. Use `StudyItem`, not `Word`, throughout the domain.
-15. Keep the topic template on `Topic` as a raw string.
+15. Keep the notebook template on `Notebook` as a raw string.
 16. Use UUID identifiers consistently.
 17. Treat GORM tags on structs as an intentional pragmatic choice.
 18. Do not add SSR or a Node production runtime.

@@ -8,19 +8,25 @@ package domain
 
 import "github.com/google/uuid"
 
-type Topic struct {
+type Notebook struct {
 	Id       string `json:"id" gorm:"type:char(36);primaryKey"`
-	Name     string `json:"name" gorm:"type:varchar(255);uniqueIndex:idx_topic_user_name;not null"`
-	UserId   string `json:"userId" gorm:"type:char(36);uniqueIndex:idx_topic_user_name;not null"`
+	Name     string `json:"name" gorm:"type:varchar(255);uniqueIndex:idx_notebook_user_name;not null"`
+	UserId   string `json:"userId" gorm:"type:char(36);uniqueIndex:idx_notebook_user_name;not null"`
 	User     User   `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 	Template string `json:"template" gorm:"type:varchar(2048)"`
+	Color    string `json:"color" gorm:"type:char(7);not null"` // Color is a "#RRGGBB" value,
 }
 
-func NewTopic(name, userId, template string) Topic {
-	return Topic{
+func NewNotebook(name, userId, template, color string) (Notebook, error) {
+	if err := ValidateNotebookColor(color); err != nil {
+		return Notebook{}, err
+	}
+
+	return Notebook{
 		Id:       uuid.NewString(),
 		Name:     name,
 		UserId:   userId,
 		Template: template,
-	}
+		Color:    color,
+	}, nil
 }

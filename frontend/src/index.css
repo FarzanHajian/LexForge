@@ -54,9 +54,23 @@
     --color-text-muted: var(--color-neutral-500);
 }
 
-.main-font {
-  font-family: "Rubik", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal;
+.primary-button {
+    @apply bg-brand text-surface hover:bg-brand-hover min-w-30 sm:min-w-36 text-xl;
+}
+
+.secondary-button {
+    @apply bg-accent text-text hover:bg-accent-hover min-w-30 sm:min-w-36 text-xl;
+}
+
+.rubik-regular {
+    font-family: "Rubik", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.pangolin-regular {
+    font-family: "Pangolin", cursive;
+    font-weight: 400;
+    font-style: normal;
 }

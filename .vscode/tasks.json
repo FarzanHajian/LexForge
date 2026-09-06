@@ -1,0 +1,34 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start FE dev server",
+            "type": "npm",
+            "script": "dev",
+            "path": "frontend",
+            "options": {
+                "env": {
+                    "VITE_LEXFORGE_SERVER_ADDRESS": "http://localhost:5656",
+                    "VITE_AUTH0_DOMAIN": "[AUTH0 DOMAIN GOES HERE]",
+                    "VITE_AUTH0_CLIENT_ID": "[AUTH0 CLIENT ID GOES HERE]"
+                }
+            },
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "vite",
+                "pattern": {
+                    "regexp": "^$"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*VITE.*",
+                    "endsPattern": "ready in|Local:"
+                }
+            },
+            "presentation": {
+                "reveal": "silent",
+                "panel": "dedicated"
+            }
+        }
+    ]
+}

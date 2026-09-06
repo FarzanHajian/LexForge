@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug LexForge Backend",
+            "name": "Debug BE",
             "type": "go",
             "request": "launch",
             "mode": "auto",
@@ -15,9 +15,17 @@
                 "LEXFORGE_MAX_SESSIONS_PER_DAY": "1",
                 "LEXFORGE_MIGRATE_DATABASE": "false",
                 "LEXFORGE_DATABASE_DSN": "lexforge:lexforge@tcp(localhost:3306)/lexforge?charset=utf8mb4&parseTime=True&loc=Local",
-                "AUTH0_DOMAIN": "[AUTH0 DOMAIN GOES HERE]",
-                "AUTH0_AUDIENCE": "http://localhost:5656"
+                "LEXFORGE_AUTH0_DOMAIN": "[AUTH0 DOMAIN GOES HERE]",
+                "LEXFORGE_AUTH0_AUDIENCE": "http://localhost:5656"
             }
+        },
+        {
+            "name": "Debug FE",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:5757",
+            "webRoot": "${workspaceFolder}/frontend",
+            "preLaunchTask": "Start FE dev server"
         }
     ]
 }

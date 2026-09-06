@@ -32,7 +32,7 @@ func setupDatabase(dsn string, migrate bool) (*gorm.DB, error) {
 	sqlDB.SetConnMaxLifetime(30 * time.Minute)
 
 	if migrate {
-		err := db.AutoMigrate(&domain.User{}, &domain.Topic{})
+		err := db.AutoMigrate(&domain.User{}, &domain.Notebook{})
 		if err != nil {
 			return nil, fmt.Errorf("Failed to migrate database: %w", err)
 		}

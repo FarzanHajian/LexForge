@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-Backend scaffolding has started: `backend/go.mod` (module `github.com/FarzanHajian/lexforge/backend`) exists, along with early domain types under `backend/internal/domain` (`User`, `Topic`). There is still no build/test tooling, migrations, HTTP layer, or GORM repository implementation beyond these domain types. Before writing code, check whether more has changed — if `/docs/specs`, `/docs/plans`, `/docs/adr`, `/issues`, `CHANGELOG.md`, or a real `README.md` exist, treat them as authoritative over this file and over both handoff docs, and flag any conflicts rather than silently overriding them.
+Backend scaffolding has started: `backend/go.mod` (module `github.com/FarzanHajian/lexforge/backend`) exists, along with early domain types under `backend/internal/domain` (`User`, `Notebook`). There is still no build/test tooling, migrations, HTTP layer, or GORM repository implementation beyond these domain types. Before writing code, check whether more has changed — if `/docs/specs`, `/docs/plans`, `/docs/adr`, `/issues`, `CHANGELOG.md`, or a real `README.md` exist, treat them as authoritative over this file and over both handoff docs, and flag any conflicts rather than silently overriding them.
 
 The authoritative handoff doc is `docs/LexForge_Coding_Agent_Handoff.md`. An earlier `docs/LexPilot_Coding_Agent_Handoff.md` still exists but is superseded where the two disagree (e.g. product name, `Word` → `StudyItem`) — treat the LexForge doc as newer/authoritative per its own conflict-resolution rule.
 
@@ -14,7 +14,7 @@ Once build/test tooling exists, update this file with the actual commands (Go bu
 
 ## What LexForge is
 
-A multi-user foreign-language vocabulary learning app (formerly referred to as "LexPilot" in older docs — the product/repo name is now **LexForge**): vocabulary management, topic-based organization, daily spaced-practice sessions, learning-history tracking, and read-only topic sharing between users. It also doubles as a portfolio project, so code quality, testability, and observability are deliberate goals — but avoid building sophistication (scheduling algorithms, analytics, infra) ahead of actual need.
+A multi-user foreign-language vocabulary learning app (formerly referred to as "LexPilot" in older docs — the product/repo name is now **LexForge**): vocabulary management, notebook-based organization, daily spaced-practice sessions, learning-history tracking, and read-only notebook sharing between users. It also doubles as a portfolio project, so code quality, testability, and observability are deliberate goals — but avoid building sophistication (scheduling algorithms, analytics, infra) ahead of actual need.
 
 ## Technology decisions (fixed, do not silently change)
 
@@ -32,7 +32,7 @@ HTTP Handler -> Application Service -> Repository/Infra Interface -> GORM Reposi
 Application Core -> Authentication Interface -> Auth0 Adapter -> Auth0 Go SDK
 ```
 
-Business logic must stay independent of Echo, GORM, MySQL, and Auth0 where practical — it should depend only on small, consumer-defined interfaces (Go interfaces are implicit, so prefer narrow interfaces over large "repository" ones). This is about behavior, not struct tags: GORM tags on application structs are an **intentional, accepted pragmatic choice** for this project (e.g. `domain.User`, `domain.Topic` carry `gorm:"primaryKey"`, `type:char(36)`, `uniqueIndex`, etc. directly). Do not create separate domain/persistence models solely to eliminate GORM tags — tags are inert reflected metadata with no Go import on `gorm`, and a mapping layer between domain and persistence models isn't worth the boilerplate at this project's scale. Revisit only if a persistence detail genuinely diverges from the domain shape.
+Business logic must stay independent of Echo, GORM, MySQL, and Auth0 where practical — it should depend only on small, consumer-defined interfaces (Go interfaces are implicit, so prefer narrow interfaces over large "repository" ones). This is about behavior, not struct tags: GORM tags on application structs are an **intentional, accepted pragmatic choice** for this project (e.g. `domain.User`, `domain.Notebook` carry `gorm:"primaryKey"`, `type:char(36)`, `uniqueIndex`, etc. directly). Do not create separate domain/persistence models solely to eliminate GORM tags — tags are inert reflected metadata with no Go import on `gorm`, and a mapping layer between domain and persistence models isn't worth the boilerplate at this project's scale. Revisit only if a persistence detail genuinely diverges from the domain shape.
 
 The spaced-repetition scheduler is likewise a replaceable component behind an interface: start with a simple due/overdue-first scheduler, evolve toward SM-2-style, potentially FSRS later — never hard-code a single scheduling implementation into callers.
 
@@ -40,10 +40,10 @@ The spaced-repetition scheduler is likewise a replaceable component behind an in
 
 - **IDs**: primary keys are UUIDs, not auto-increment integers — Go field type `string`, generated via `github.com/google/uuid` (`uuid.NewString()`) at construction time, mapped to `CHAR(36)` in MySQL (`gorm:"type:char(36);primaryKey"`). Applies across all domain entities.
 - **User**: internal record — currently `Id`, `Name`, `ExternalId` in code (`backend/internal/domain/user.go`). `email`/`created_at` from the original handoff design aren't in the struct yet. The app owns its own authorization rules independent of Auth0.
-- **Topic**: owned by a user, has exactly one template, can be shared read-only with other users via `OWNER`/`VIEWER` roles. Viewers can read a topic and its study items but never modify them. In code (`backend/internal/domain/topic.go`), `Template` is a plain raw string (Markdown-formatted), capped at `varchar(2048)`, stored directly on `Topic` — **not** a structured/JSON schema and **not** a separate `TopicTemplate` entity/table (don't introduce one unless templates need an independent lifecycle later).
-- **StudyItem** (not `Word` — renamed per `docs/LexForge_Coding_Agent_Handoff.md`): belongs to exactly one topic. Can be a word, phrase, expression, idiom, sentence, or other language-learning item — content is **template-driven**, not a fixed schema; never hard-code the vocabulary model around fields like `translation`/`example`/`notes`. Supports Markdown/rich text.
+- **Notebook** (formerly `Topic` — renamed to better match the product's "physical notebook" metaphor): owned by a user, has exactly one template, can be shared read-only with other users via `OWNER`/`VIEWER` roles. Viewers can read a notebook and its study items but never modify them. In code (`backend/internal/domain/notebook.go`), `Template` is a plain raw string (Markdown-formatted), capped at `varchar(2048)`, stored directly on `Notebook` — **not** a structured/JSON schema and **not** a separate `NotebookTemplate` entity/table (don't introduce one unless templates need an independent lifecycle later).
+- **StudyItem** (not `Word` — renamed per `docs/LexForge_Coding_Agent_Handoff.md`): belongs to exactly one notebook. Can be a word, phrase, expression, idiom, sentence, or other language-learning item — content is **template-driven**, not a fixed schema; never hard-code the vocabulary model around fields like `translation`/`example`/`notes`. Supports Markdown/rich text.
 - **Learning progress/state**: keyed by `(user, study_item)`, not by study item alone — a shared study item has independent learning state per user. This is the central multi-tenancy rule of the domain: never let per-item data leak across users. Keep current aggregate state (`UserStudyItemState`: e.g. `user_id`, `study_item_id`, `status`, `last_reviewed_at`, `next_review_at`, `correct_count`, `wrong_count`) separate from historical review events (`StudyItemReview`).
-- **PracticeSession**: one session per `(user_id, topic_id, date)`, enforced at the DB level with a `UNIQUE(user_id, topic_id, date)` constraint. The user picks the session size (5/10/15/20) at creation time; that size and the session's item set/order are a **snapshot** fixed at creation — never dynamically recomputed as the user progresses (`PracticeSessionItem` rows capture that snapshot). If today's session already exists, resume it instead of creating another.
+- **PracticeSession**: one session per `(user_id, notebook_id, date)`, enforced at the DB level with a `UNIQUE(user_id, notebook_id, date)` constraint. The user picks the session size (5/10/15/20) at creation time; that size and the session's item set/order are a **snapshot** fixed at creation — never dynamically recomputed as the user progresses (`PracticeSessionItem` rows capture that snapshot). If today's session already exists, resume it instead of creating another.
   - Statuses: `IN_PROGRESS`, `COMPLETED`, `EXPIRED`.
   - **Expiration is lazy** — do not run a midnight background job. When the user attempts to start a new session, the backend checks for an existing `IN_PROGRESS` session from a previous calendar day and transitions it to `EXPIRED` before creating the new day's session. The backend must also reject answers submitted against an expired/previous-day session.
   - Session statistics only include `COMPLETED` sessions (`IN_PROGRESS`/`EXPIRED` excluded), but reviews actually submitted before a session was abandoned remain valid learning-history records — i.e. session stats come from completed sessions, learning stats come from actual recorded reviews.
@@ -53,8 +53,8 @@ The spaced-repetition scheduler is likewise a replaceable component behind an in
 ## Testing strategy
 
 - Go `testing` + Testify (assertions) + Testify/mock (mocking).
-- **Unit tests**: colocated `*_test.go` files alongside the code in each `internal/` package (not a separate folder) — pure business logic against repository/service interfaces with mocks/fakes, no database. Shared fakes/mocks/fixtures live in `internal/testutil`. Priority areas: practice-session rules, topic/viewer permissions, study-item selection, learning-state calculations, scheduler behavior.
-- **Integration tests**: live in `backend/test/integration`, using real MySQL via Testcontainers (`github.com/testcontainers/testcontainers-go/modules/mysql`) — not SQLite — because SQL semantics, constraints, and concurrency matter. Important cases: practice-session uniqueness, session expiration, migrations, topic sharing, learning-state persistence, repository queries. Gated behind the `integration` build tag (`//go:build integration`) so plain `go test ./...` never requires Docker; run them explicitly with `go test -tags=integration ./test/integration/...`.
+- **Unit tests**: colocated `*_test.go` files alongside the code in each `internal/` package (not a separate folder) — pure business logic against repository/service interfaces with mocks/fakes, no database. Shared fakes/mocks/fixtures live in `internal/testutil`. Priority areas: practice-session rules, notebook/viewer permissions, study-item selection, learning-state calculations, scheduler behavior.
+- **Integration tests**: live in `backend/test/integration`, using real MySQL via Testcontainers (`github.com/testcontainers/testcontainers-go/modules/mysql`) — not SQLite — because SQL semantics, constraints, and concurrency matter. Important cases: practice-session uniqueness, session expiration, migrations, notebook sharing, learning-state persistence, repository queries. Gated behind the `integration` build tag (`//go:build integration`) so plain `go test ./...` never requires Docker; run them explicitly with `go test -tags=integration ./test/integration/...`.
 
 ## Observability (portfolio-relevant, introduce incrementally)
 
@@ -68,14 +68,14 @@ Planned stack: OpenTelemetry -> OTel Collector -> Prometheus (metrics) / Tempo (
 4. Business rules must be testable without a database.
 5. Use real MySQL (not SQLite) for integration tests.
 6. Preserve full review/learning history; never overwrite it.
-7. Learning state is always per-user, even for shared topics/study items.
+7. Learning state is always per-user, even for shared notebooks/study items.
 8. A practice session is an immutable snapshot once started.
 9. Expire unfinished sessions lazily (on next session-start attempt); never a midnight job.
 10. Exclude expired sessions from session statistics; keep their actually-submitted reviews in learning history.
 11. The scheduler must stay swappable (simple -> SM-2 -> FSRS).
 12. Don't over-engineer the first version of anything (scheduler, analytics, sharing permissions beyond OWNER/VIEWER).
 13. Use `StudyItem`, not `Word`, throughout the domain.
-14. Keep the topic template on `Topic` as a raw string, not a separate entity.
+14. Keep the notebook template on `Notebook` as a raw string, not a separate entity.
 15. Use UUID identifiers consistently across all entities.
 16. Treat GORM tags directly on domain structs as an intentional pragmatic choice, not a violation of layering.
 17. No SSR, no Node production runtime.
