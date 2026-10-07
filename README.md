@@ -69,6 +69,30 @@ npm install
 npm run dev
 ```
 
+## Environment variables
+
+### Backend (`backend/`)
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `LEXFORGE_SERVER_ADDRESS` | No | `http://localhost:5656` | Address the Echo server binds to |
+| `LEXFORGE_MAX_SESSIONS_PER_DAY` | No | `1` | Max practice sessions per user/notebook/day |
+| `LEXFORGE_MIGRATE_DATABASE` | No | `false` | Whether to run GORM auto-migration on startup |
+| `LEXFORGE_DATABASE_DSN` | Yes | — | MySQL connection string (DSN) |
+| `LEXFORGE_AUTH0_DOMAIN` | Yes | — | Auth0 tenant domain; used as the OIDC issuer when validating access tokens |
+| `LEXFORGE_AUTH0_AUDIENCE` | Yes | — | Auth0 API identifier this backend accepts tokens for |
+
+### Frontend (`frontend/`)
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `VITE_LEXFORGE_SERVER_ADDRESS` | No | `''` (relative paths) | Base URL of the backend API the SPA calls |
+| `VITE_AUTH0_DOMAIN` | Yes | — | Auth0 tenant domain (same tenant as the backend's `LEXFORGE_AUTH0_DOMAIN`) |
+| `VITE_AUTH0_CLIENT_ID` | Yes | — | Auth0 SPA application client ID |
+| `VITE_AUTH0_AUDIENCE` | Yes | — | Must match the backend's `LEXFORGE_AUTH0_AUDIENCE` — identifies the API the requested access token is issued for |
+
+This repo has no `.env` files (frontend `.env*` is gitignored). Locally, backend variables are set in the "Debug BE" configuration in `.vscode/launch.json`, and frontend variables in the "Start FE dev server" task in `.vscode/tasks.json`.
+
 ## Testing
 
 - **Unit tests** (Go `testing` + Testify): colocated as `*_test.go` files next to the code they test in each `internal/` package. Business rules are tested against repository/service interfaces with mocks/fakes (see `internal/testutil`) — no database involved.

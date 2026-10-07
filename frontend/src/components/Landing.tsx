@@ -25,7 +25,7 @@ export default function Landing() {
             </div>
             <div className="relative z-10 text-2xl">To continue, please login</div>
 
-            <Button className="relative z-10 primary-button" onClick={() => loginWithRedirect()} >
+            <Button className="relative z-10 lf-primary-button" onClick={() => loginWithRedirect()} >
                 Login
             </Button>
         </div>

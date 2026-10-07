@@ -12,9 +12,15 @@ import (
 	"time"
 
 	"github.com/FarzanHajian/lexforge/backend/internal/domain"
+	"github.com/FarzanHajian/lexforge/backend/internal/repository"
+	"github.com/FarzanHajian/lexforge/backend/internal/service"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
+
+type ServiceContainer struct {
+	userService *service.UserService
+}
 
 func setupDatabase(dsn string, migrate bool) (*gorm.DB, error) {
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -50,5 +56,11 @@ func teardownDatabase(db *gorm.DB) {
 	}
 	if err := sqlDB.Close(); err != nil {
 		log.Printf("failed to close database connection: %v", err)
+	}
+}
+
+func setupServices(db *gorm.DB) *ServiceContainer {
+	return &ServiceContainer{
+		userService: service.NewUserService(repository.NewGormUserRepository(db)),
 	}
 }

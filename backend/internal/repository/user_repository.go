@@ -10,6 +10,7 @@ import "github.com/FarzanHajian/lexforge/backend/internal/domain"
 
 type UserRepository interface {
 	FindById(id string) (domain.User, error)
+	FindByExternalId(externalId string) (domain.User, error)
 	LoadAll(buffer any, where ...any) error
 	Update(user *domain.User) (*domain.User, error)
 }

@@ -15,7 +15,7 @@
                 "LEXFORGE_MAX_SESSIONS_PER_DAY": "1",
                 "LEXFORGE_MIGRATE_DATABASE": "false",
                 "LEXFORGE_DATABASE_DSN": "lexforge:lexforge@tcp(localhost:3306)/lexforge?charset=utf8mb4&parseTime=True&loc=Local",
-                "LEXFORGE_AUTH0_DOMAIN": "[AUTH0 DOMAIN GOES HERE]",
+                "LEXFORGE_AUTH0_DOMAIN": "dev-48vf5nwf.us.auth0.com",
                 "LEXFORGE_AUTH0_AUDIENCE": "http://localhost:5656"
             }
         },

@@ -19,8 +19,8 @@ func NewUserService(repo repository.UserRepository) *UserService {
 	return &UserService{repo: repo}
 }
 
-func (s *UserService) GetById(id string) (domain.User, error) {
-	return s.repo.FindById(id)
+func (s *UserService) GetByExternalId(externalId string) (domain.User, error) {
+	return s.repo.FindByExternalId(externalId)
 }
 
 func (s *UserService) GetAllAsLookup() ([]domain.UserLookup, error) {
@@ -32,7 +32,7 @@ func (s *UserService) GetAllAsLookup() ([]domain.UserLookup, error) {
 }
 
 func (s *UserService) UpdateSettings(id string, studyItemsPerSession int) (domain.User, error) {
-	user, err := s.GetById(id)
+	user, err := s.repo.FindById(id)
 	if err != nil {
 		return domain.User{}, err
 	}

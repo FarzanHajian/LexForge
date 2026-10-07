@@ -22,7 +22,7 @@ func TestUserService_WhenUserNotFound_ReturnsNotFoundError(t *testing.T) {
 	repo.On("FindById", "u-1").Return(domain.User{}, errorhandler.NotFound("User not found"))
 	svc := NewUserService(repo)
 
-	user, err := svc.GetById("u-1")
+	user, err := svc.GetByExternalId("u-1")
 
 	assert.Equal(t, domain.User{}, user)
 	var appErr errorhandler.AppError

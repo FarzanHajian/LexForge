@@ -6,10 +6,13 @@
 
 export const API_BASE = import.meta.env.VITE_LEXFORGE_SERVER_ADDRESS ?? ''
 
-export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+export async function apiFetch<T>(path: string, token: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
-    credentials: 'include', // send the auth cookie
-    headers: { 'Content-Type': 'application/json', ...init?.headers },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      ...init?.headers,
+    },
     ...init,
   })
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)

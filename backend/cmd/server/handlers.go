@@ -13,7 +13,7 @@ import (
 	"github.com/labstack/echo/v5"
 )
 
-func registerRoutes(e *echo.Echo, api *echo.Group) {
+func registerRoutes(e *echo.Echo, api *echo.Group, services *ServiceContainer) {
 
 	e.GET("/", func(c *echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]string{"message": "Hello, World!"})
@@ -24,6 +24,8 @@ func registerRoutes(e *echo.Echo, api *echo.Group) {
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]string{"message": "failed to read claims"})
 		}
+
+		services.userService.GetByExternalId(sub)
 		return c.JSON(http.StatusOK, map[string]string{"sub": sub})
 	})
 }

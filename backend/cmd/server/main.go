@@ -38,12 +38,14 @@ func main() {
 		log.Fatalf("Failed to set up JWT middleware: %v", err)
 	}
 
+	services := setupServices(db)
+
 	e := echo.New()
 	e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
 
 	api := e.Group("/api", echo.WrapMiddleware(jwtMiddleware.CheckJWT))
-	registerRoutes(e, api)
+	registerRoutes(e, api, services)
 
 	if err := e.Start(cfg.ServerAddress); err != nil {
 		e.Logger.Error("failed to start server", "error", err)

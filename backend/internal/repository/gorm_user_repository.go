@@ -38,6 +38,19 @@ func (r *GormUserRepository) FindById(id string) (domain.User, error) {
 	return result, nil
 }
 
+func (r *GormUserRepository) FindByExternalId(externalId string) (domain.User, error) {
+	ctx := context.Background()
+
+	result, err := gorm.G[domain.User](r.db).Where(&domain.User{ExternalId: externalId}).First(ctx)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return domain.User{}, errorhandler.NotFound("User not found")
+		}
+		return domain.User{}, err
+	}
+	return result, nil
+}
+
 func (r *GormUserRepository) LoadAll(buffer any, where ...any) error {
 	return r.db.Model(&domain.User{}).Find(buffer, where...).Error
 }

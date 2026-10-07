@@ -9,8 +9,9 @@
             "options": {
                 "env": {
                     "VITE_LEXFORGE_SERVER_ADDRESS": "http://localhost:5656",
-                    "VITE_AUTH0_DOMAIN": "[AUTH0 DOMAIN GOES HERE]",
-                    "VITE_AUTH0_CLIENT_ID": "[AUTH0 CLIENT ID GOES HERE]"
+                    "VITE_AUTH0_DOMAIN": "dev-48vf5nwf.us.auth0.com",
+                    "VITE_AUTH0_CLIENT_ID": "mpOcW33nv4cfoNcwovND6Kp2XWklftwj",
+                    "VITE_AUTH0_AUDIENCE": "http://localhost:5656"
                 }
             },
             "isBackground": true,

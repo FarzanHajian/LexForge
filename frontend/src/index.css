@@ -54,22 +54,30 @@
     --color-text-muted: var(--color-neutral-500);
 }
 
-.primary-button {
+.lf-primary-button {
     @apply bg-brand text-surface hover:bg-brand-hover min-w-30 sm:min-w-36 text-xl;
 }
 
-.secondary-button {
+.lf-secondary-button {
     @apply bg-accent text-text hover:bg-accent-hover min-w-30 sm:min-w-36 text-xl;
 }
 
-.rubik-regular {
+.lf-header-text-size {
+    @apply text-xl lg:text-2xl;
+}
+
+.lf-text-size {
+    @apply text-base lg:text-lg;
+}
+
+.lf-rubik-regular {
     font-family: "Rubik", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
 }
 
-.pangolin-regular {
+.lf-pangolin-regular {
     font-family: "Pangolin", cursive;
     font-weight: 400;
     font-style: normal;

@@ -20,6 +20,11 @@ func (m *UserRepositoryMock) FindById(id string) (domain.User, error) {
 	return args.Get(0).(domain.User), args.Error(1)
 }
 
+func (m *UserRepositoryMock) FindByExternalId(externalId string) (domain.User, error) {
+	args := m.Called(externalId)
+	return args.Get(0).(domain.User), args.Error(1)
+}
+
 func (m *UserRepositoryMock) LoadAll(buffer any, where ...any) error {
 	callArgs := append([]any{buffer}, where...)
 	args := m.Called(callArgs...)
