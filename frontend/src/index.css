@@ -52,6 +52,30 @@
     --color-border: var(--color-neutral-200);
     --color-text: var(--color-neutral-900);
     --color-text-muted: var(--color-neutral-500);
+
+    /* Toast animations */
+    --animate-toast-in: toast-in 300ms ease-out;
+    --animate-toast-progress: toast-progress linear forwards;
+
+    @keyframes toast-in {
+        from {
+            opacity: 0;
+            transform: translateX(1rem);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes toast-progress {
+        from {
+            transform: scaleX(1);
+        }
+        to {
+            transform: scaleX(0);
+        }
+    }
 }
 
 .lf-primary-button {

@@ -41,6 +41,7 @@ func main() {
 	services := setupServices(db)
 
 	e := echo.New()
+	e.HTTPErrorHandler = httpErrorHandler(echo.DefaultHTTPErrorHandler(false))
 	e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
 
@@ -48,6 +49,6 @@ func main() {
 	registerRoutes(e, api, services)
 
 	if err := e.Start(cfg.ServerAddress); err != nil {
-		e.Logger.Error("failed to start server", "error", err)
+		e.Logger.Error("Failed to start server.", "error", err)
 	}
 }

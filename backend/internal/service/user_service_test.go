@@ -34,14 +34,14 @@ func TestUserService_WhenUserNotFound_ReturnsNotFoundError(t *testing.T) {
 func TestUserService_UpdateSettings_Success(t *testing.T) {
 	repo := new(testutil.UserRepositoryMock)
 	existing := domain.User{Id: "u-1", Name: "Ada", ExternalId: "auth0|123", StudyItemsPerSession: 10}
-	repo.On("FindById", "u-1").Return(existing, nil)
+	repo.On("FindByExternalId", "auth0|123").Return(existing, nil)
 
 	updated := existing
 	updated.StudyItemsPerSession = 20
 	repo.On("Update", &updated).Return(&updated, nil)
 
 	svc := NewUserService(repo)
-	user, err := svc.UpdateSettings("u-1", 20)
+	user, err := svc.UpdateSettings("auth0|123", 20)
 
 	assert.NoError(t, err)
 	assert.Equal(t, updated, user)
@@ -50,7 +50,7 @@ func TestUserService_UpdateSettings_Success(t *testing.T) {
 
 func TestUserService_UpdateSettings_GetByIdError(t *testing.T) {
 	repo := new(testutil.UserRepositoryMock)
-	repo.On("FindById", "missing").Return(domain.User{}, errorhandler.NotFound("User not found"))
+	repo.On("FindByExternalId", "missing").Return(domain.User{}, errorhandler.NotFound("User not found"))
 
 	svc := NewUserService(repo)
 	_, err := svc.UpdateSettings("missing", 20)
@@ -63,14 +63,14 @@ func TestUserService_UpdateSettings_GetByIdError(t *testing.T) {
 func TestUserService_UpdateSettings_UpdateError(t *testing.T) {
 	repo := new(testutil.UserRepositoryMock)
 	existing := domain.User{Id: "u-1", Name: "Ada", ExternalId: "auth0|123", StudyItemsPerSession: 10}
-	repo.On("FindById", "u-1").Return(existing, nil)
+	repo.On("FindByExternalId", "auth0|123").Return(existing, nil)
 
 	updated := existing
 	updated.StudyItemsPerSession = 20
 	repo.On("Update", &updated).Return((*domain.User)(nil), errors.New("db error"))
 
 	svc := NewUserService(repo)
-	_, err := svc.UpdateSettings("u-1", 20)
+	_, err := svc.UpdateSettings("auth0|123", 20)
 
 	assert.Error(t, err)
 	repo.AssertExpectations(t)

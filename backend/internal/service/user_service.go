@@ -31,8 +31,8 @@ func (s *UserService) GetAllAsLookup() ([]domain.UserLookup, error) {
 	return lookups, nil
 }
 
-func (s *UserService) UpdateSettings(id string, studyItemsPerSession int) (domain.User, error) {
-	user, err := s.repo.FindById(id)
+func (s *UserService) UpdateSettings(externalId string, studyItemsPerSession int) (domain.User, error) {
+	user, err := s.repo.FindByExternalId(externalId)
 	if err != nil {
 		return domain.User{}, err
 	}

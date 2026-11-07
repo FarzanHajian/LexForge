@@ -5,7 +5,7 @@
 // LICENSE file in the root directory of this source tree.
 
 import { Button } from "flowbite-react";
-import Manage from "./Manage,";
+import Manage from "./Manage";
 
 export default function Home() {
     return (

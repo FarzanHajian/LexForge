@@ -4,5 +4,9 @@
 // This source code is licensed under the BSD 3-Clause license found in the
 // LICENSE file in the root directory of this source tree.
 
-// Package http contains Echo handlers, routing, and middleware.
-package http
+export type User = {
+    id: string;
+    name: string;
+    externalId: string;
+    studyItemsPerSession: number;
+}

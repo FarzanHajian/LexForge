@@ -11,8 +11,9 @@ import "fmt"
 type Code string
 
 const (
-	ErrorCodeNotFound Code = "NOT_FOUND"
-	ErrorCodeInternal Code = "INTERNAL"
+	ErrorCodeNotFound   Code = "NOT_FOUND"
+	ErrorCodeInternal   Code = "INTERNAL"
+	ErrorCodeBadRequest Code = "BAD_REQUEST"
 )
 
 type AppError interface {
@@ -27,16 +28,20 @@ type appError struct {
 	cause   error
 }
 
-func newError(code Code, message string, cause error) *appError {
-	return &appError{code: code, message: message, cause: cause}
-}
-
 func NotFound(message string) AppError {
 	return newError(ErrorCodeNotFound, message, nil)
 }
 
 func Internal(cause error) AppError {
 	return newError(ErrorCodeInternal, "Something went wrong. Please try again later.", cause)
+}
+
+func BadRequest(message string, cause error) AppError {
+	return newError(ErrorCodeBadRequest, message, cause)
+}
+
+func newError(code Code, message string, cause error) *appError {
+	return &appError{code: code, message: message, cause: cause}
 }
 
 func (e *appError) Error() string {

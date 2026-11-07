@@ -4,9 +4,11 @@
 // This source code is licensed under the BSD 3-Clause license found in the
 // LICENSE file in the root directory of this source tree.
 
+import { type ComponentProps } from "react";
 import { Avatar, Dropdown, DropdownDivider, DropdownHeader, DropdownItem, Navbar, NavbarBrand, NavbarCollapse, NavbarLink, NavbarToggle } from "flowbite-react";
 import LexForge from "./LexForge";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Link, useLocation } from "react-router";
 import { HiAcademicCap, HiCog, HiHome, HiMiniArrowPathRoundedSquare } from "react-icons/hi2";
 
 const navbarTheme = {
@@ -14,7 +16,7 @@ const navbarTheme = {
         base: "bg-primary-50 p-1 border-b border-b-primary-200",
     },
     link: {
-        base: "lf-header-text-size",
+        base: "flex items-center gap-1 lf-header-text-size",
     }
 };
 
@@ -27,14 +29,20 @@ const dropdownTheme = {
     }
 };
 
+// Flowbite's `as` prop types don't include React Router's `to`, so this adapter takes `href` instead.
+function RouterLink({ href, ...props }: ComponentProps<"a">) {
+    return <Link to={href ?? "/"} {...props} />;
+}
+
 
 export default function MainMenu() {
     const { user, isAuthenticated, isLoading, logout } = useAuth0();
+    const { pathname } = useLocation();
     const generalAvatar = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110' viewBox='0 0 110 110'%3E%3Ccircle cx='55' cy='55' r='55' fill='%2363b3ed'/%3E%3Cpath d='M55 50c8.28 0 15-6.72 15-15s-6.72-15-15-15-15 6.72-15 15 6.72 15 15 15zm0 7.5c-10 0-30 5.02-30 15v3.75c0 2.07 1.68 3.75 3.75 3.75h52.5c2.07 0 3.75-1.68 3.75-3.75V72.5c0-9.98-20-15-30-15z' fill='%23fff'/%3E%3C/svg%3E`;
 
     return (
         <Navbar theme={navbarTheme} fluid >
-            <NavbarBrand href="/">
+            <NavbarBrand as={RouterLink} href="/">
                 <img src="/favicon.png" className="mr-3 h-6 sm:h-9" alt="LexForge Logo" />
                 <LexForge textSize="xl" />
             </NavbarBrand>
@@ -56,10 +64,10 @@ export default function MainMenu() {
                     </div>
 
                     <NavbarCollapse>
-                        <NavbarLink href="#" className="flex items-center gap-1" active><HiHome />Home</NavbarLink>
-                        <NavbarLink href="#" className="flex items-center gap-1"><HiMiniArrowPathRoundedSquare />Today's Items</NavbarLink>
-                        <NavbarLink href="#" className="flex items-center gap-1"><HiAcademicCap />Study Session</NavbarLink>
-                        <NavbarLink href="#" className="flex items-center gap-1"><HiCog />Manage</NavbarLink>
+                        <NavbarLink as={RouterLink} href="/" active={pathname === "/"}><HiHome />Home</NavbarLink>
+                        <NavbarLink as={RouterLink} href="/today-items" active={pathname === "/today-items"}><HiMiniArrowPathRoundedSquare />Today's Items</NavbarLink>
+                        <NavbarLink as={RouterLink} href="/study-sessions" active={pathname === "/study-sessions"}><HiAcademicCap />Study Sessions</NavbarLink>
+                        <NavbarLink as={RouterLink} href="/manage" active={pathname === "/manage"}><HiCog />Manage</NavbarLink>
                     </NavbarCollapse>
                 </>
                 : null
