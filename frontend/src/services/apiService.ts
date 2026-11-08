@@ -6,7 +6,7 @@
 
 import { ApiError } from "../utils/apiError";
 
-export const API_BASE = import.meta.env.VITE_LEXFORGE_SERVER_ADDRESS ?? ''
+export const API_BASE = import.meta.env.VITE_LEXFORGE_SERVER_ADDRESS ? `${import.meta.env.VITE_LEXFORGE_SERVER_ADDRESS}/api` : '';
 
 export async function get<T>(path: string, token: string): Promise<T> {
     return apiFetch<T>(path, token, { method: 'GET' });

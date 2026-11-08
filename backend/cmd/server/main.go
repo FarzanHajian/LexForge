@@ -44,6 +44,7 @@ func main() {
 	e.HTTPErrorHandler = httpErrorHandler(echo.DefaultHTTPErrorHandler(false))
 	e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORS("http://localhost:5757"))
 
 	api := e.Group("/api", echo.WrapMiddleware(jwtMiddleware.CheckJWT))
 	registerRoutes(e, api, services)
