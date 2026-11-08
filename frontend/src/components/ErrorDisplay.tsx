@@ -6,15 +6,14 @@
 
 import ToastX from "./ToastX";
 
-export default function ErrorDisplay(props: { error: Error; onDismiss: () => void; timeout?: number }) {
-    const { error, onDismiss, timeout = 5000 } = props;
+export default function ErrorDisplay(props: { error: Error; onDismiss: () => void }) {
+    const { error, onDismiss } = props;
 
     return (
         <ToastX
             message={error.message}
             toastType="error"
             onDismiss={() => onDismiss()}
-            timeout={timeout}
         />
     );
 }

@@ -27,5 +27,12 @@
             "webRoot": "${workspaceFolder}/frontend",
             "preLaunchTask": "Start FE dev server"
         }
+    ],
+    "compounds": [
+        {
+            "name": "Debug All",
+            "configurations": ["Debug BE", "Debug FE"],
+            "stopAll": true
+        }
     ]
 }

@@ -8,8 +8,6 @@ const ERROR_CODE_UNKOWN: string = "UNKNOWN";
 const ERROR_CODE_UNREACHABLE_SERVER: string = "UNREACHABLE_SERVER";
 
 export class ApiError extends Error {
-
-
     readonly status: number;
     readonly code: string;
 

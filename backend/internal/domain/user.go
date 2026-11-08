@@ -12,12 +12,12 @@ import (
 )
 
 type User struct {
-	Id                   string `json:"id" gorm:"type:char(36);primaryKey"`
-	Name                 string `json:"name" gorm:"type:varchar(255);uniqueIndex;not null"`
-	ExternalId           string `json:"externalId" gorm:"type:varchar(255);uniqueIndex;not null"`
-	StudyItemsPerSession int    `json:"studyItemsPerSession" gorm:"type:int;not null"`
-	CreatedAt            time.Time
-	UpdatedAt            time.Time
+	Id                   string    `json:"id" gorm:"type:char(36);primaryKey"`
+	Name                 string    `json:"name" gorm:"type:varchar(255);uniqueIndex;not null"`
+	ExternalId           string    `json:"-" gorm:"type:varchar(255);uniqueIndex;not null"`
+	StudyItemsPerSession int       `json:"studyItemsPerSession" gorm:"type:int;not null"`
+	CreatedAt            time.Time `json:"-"`
+	UpdatedAt            time.Time `json:"-"`
 }
 
 func NewUser(name, externalId string, studyItemsPerSession int) User {
